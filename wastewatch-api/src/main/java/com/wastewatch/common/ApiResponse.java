@@ -1,4 +1,27 @@
 package com.wastewatch.common;
 
-public class ApiResponse {
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+
+@Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApiResponse<T> {
+
+    private final boolean success;
+    private final T data;
+    private final ErrorResponse error;
+
+    private ApiResponse(boolean success, T data, ErrorResponse error) {
+        this.success = success;
+        this.data = data;
+        this.error = error;
+    }
+
+    public static <T> ApiResponse<T> ok(T data) {
+        return new ApiResponse<>(true, data, null);
+    }
+
+    public static <T> ApiResponse<T> fail(String code, String message) {
+        return new ApiResponse<>(false, null, new ErrorResponse(code, message));
+    }
 }

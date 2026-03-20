@@ -1,4 +1,3 @@
 package com.wastewatch.common;
 
-public class ErrorResponse {
-}
+public record ErrorResponse(String code, String message) {}
