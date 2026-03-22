@@ -3,7 +3,9 @@ spring:
     name: wastewatch-api
 
   datasource:
-    url: ${DATABASE_URL}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -11,52 +13,56 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate          # never "create" or "update" in production
+      ddl-auto: none         # never "create" or "update" in production
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
   data:
     redis:
-      url: ${REDIS_URL}
+      url: redis://localhost:6379
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${SUPABASE_JWKS_URL}
+          jwk-set-uri: https://placeholder.supabase.co/auth/v1/keys
 
-  async:
-    executor:
-      core-pool-size: 4
-      max-pool-size: 8
+#  async:
+#    executor:
+#      core-pool-size: 4
+#      max-pool-size: 8
 
 server:
   port: 8080
   servlet:
     context-path: /api/v1
 
-cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME}
-  api-key: ${CLOUDINARY_API_KEY}
-  api-secret: ${CLOUDINARY_API_SECRET}
+#cloudinary:
+#  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+#  api-key: ${CLOUDINARY_API_KEY}
+#  api-secret: ${CLOUDINARY_API_SECRET}
 
-sendgrid:
-  api-key: ${SENDGRID_API_KEY}
+#sendgrid:
+#  api-key: ${SENDGRID_API_KEY}
 
-interswitch:
-  client-id: ${INTERSWITCH_CLIENT_ID}
-  client-secret: ${INTERSWITCH_CLIENT_SECRET}
-  base-url: ${INTERSWITCH_BASE_URL}
+#interswitch:
+#  client-id: ${INTERSWITCH_CLIENT_ID}
+#  client-secret: ${INTERSWITCH_CLIENT_SECRET}
+#  base-url: ${INTERSWITCH_BASE_URL}
 
-google:
-  maps:
-    server-key: ${GOOGLE_MAPS_SERVER_KEY}
+#google:
+#  maps:
+#    server-key: ${GOOGLE_MAPS_SERVER_KEY}
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+
+flyway:
+  enabled: true
+  locations: classpath:db/migration
+  baseline-on-migrate: true

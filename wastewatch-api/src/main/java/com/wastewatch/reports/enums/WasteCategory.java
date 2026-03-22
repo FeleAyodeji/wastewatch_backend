@@ -1,4 +1,9 @@
 package com.wastewatch.reports.enums;
 
-public class WasteCategory {
+public enum WasteCategory {
+    SEWAGE,
+    SOLID_WASTE,
+    HAZARDOUS,
+    MEDICAL_WASTE,
+    E_WASTE
 }

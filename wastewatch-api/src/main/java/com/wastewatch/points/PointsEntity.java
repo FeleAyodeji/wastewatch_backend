@@ -1,4 +1,30 @@
 package com.wastewatch.points;
 
-public class PointsEntity {
+import com.wastewatch.common.BaseEntity;
+import com.wastewatch.points.enums.TransactionType;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "points")
+@Getter @Setter
+@NoArgsConstructor
+public class PointsEntity extends BaseEntity {
+
+    @Column(name = "citizen_id", nullable = false)
+    private UUID citizenId;
+
+    // Positive = credit, negative = debit
+    @Column(nullable = false)
+    private Integer points;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", nullable = false,
+            columnDefinition = "transaction_type")
+    private TransactionType transactionType;
+
+    @Column(name = "reference_id")
+    private UUID referenceId;
 }

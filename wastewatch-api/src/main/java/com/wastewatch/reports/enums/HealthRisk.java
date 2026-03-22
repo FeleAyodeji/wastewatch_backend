@@ -1,4 +1,6 @@
 package com.wastewatch.reports.enums;
 
-public class HealthRisk {
+public enum HealthRisk {
+    HIGH,
+    MEDIUM
 }

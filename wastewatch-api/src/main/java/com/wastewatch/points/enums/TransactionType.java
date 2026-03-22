@@ -1,4 +1,9 @@
 package com.wastewatch.points.enums;
 
-public class TransactionType {
+public enum TransactionType {
+    SUBMISSION,
+    RESOLUTION_BONUS,
+    UPVOTE,
+    REDEMPTION,
+    REVERSAL
 }

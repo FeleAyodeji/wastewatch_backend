@@ -1,4 +1,9 @@
 package com.wastewatch.reports.enums;
 
-public class ReportStatus {
+public enum ReportStatus {
+    SUBMITTED,
+    ACKNOWLEDGED,
+    IN_PROGRESS,
+    RESOLVED,
+    ESCALATED
 }

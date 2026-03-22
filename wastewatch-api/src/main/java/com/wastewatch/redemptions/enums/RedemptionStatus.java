@@ -1,4 +1,8 @@
 package com.wastewatch.redemptions.enums;
 
-public class RedemptionStatus {
+public enum RedemptionStatus {
+    PENDING,
+    SUCCESS,
+    FAILED,
+    REVERSED
 }
