@@ -2,6 +2,9 @@ spring:
   application:
     name: wastewatch-api
 
+  session:
+    store-type: none
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -13,7 +16,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none         # never "create" or "update" in production
+      ddl-auto: none
+    open-in-view: false
     show-sql: false
     properties:
       hibernate:
@@ -27,34 +31,17 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://placeholder.supabase.co/auth/v1/keys
+          jwk-set-uri: ${SUPABASE_JWKS_URL}
 
-#  async:
-#    executor:
-#      core-pool-size: 4
-#      max-pool-size: 8
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
 
 server:
   port: 8080
   servlet:
     context-path: /api/v1
-
-#cloudinary:
-#  cloud-name: ${CLOUDINARY_CLOUD_NAME}
-#  api-key: ${CLOUDINARY_API_KEY}
-#  api-secret: ${CLOUDINARY_API_SECRET}
-
-#sendgrid:
-#  api-key: ${SENDGRID_API_KEY}
-
-#interswitch:
-#  client-id: ${INTERSWITCH_CLIENT_ID}
-#  client-secret: ${INTERSWITCH_CLIENT_SECRET}
-#  base-url: ${INTERSWITCH_BASE_URL}
-
-#google:
-#  maps:
-#    server-key: ${GOOGLE_MAPS_SERVER_KEY}
 
 management:
   endpoints:
@@ -62,7 +49,7 @@ management:
       exposure:
         include: health,info
 
-flyway:
-  enabled: true
-  locations: classpath:db/migration
-  baseline-on-migrate: true
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
