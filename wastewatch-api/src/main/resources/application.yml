@@ -11,6 +11,8 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
+      connection-timeout: 10000
+      initialization-fail-timeout: 10000
       maximum-pool-size: 10
       minimum-idle: 2
 
@@ -31,7 +33,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${SUPABASE_JWKS_URL}
+          jwk-set-uri: https://zucvbrcgebdmyrxhyrbm.supabase.co/auth/v1/.well-known/jwks.json
 
   flyway:
     enabled: true
@@ -53,3 +55,12 @@ app:
   cors:
     allowed-origins:
       - http://localhost:3000
+
+# ← ADDED: Supabase project URL for JWT issuer validation
+supabase:
+  project-url: ${SUPABASE_PROJECT_URL}
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG

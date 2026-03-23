@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -19,11 +21,15 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity          // enables @PreAuthorize on controllers
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String jwksUri;
+
+    // ← ADDED: reads supabase.project-url from application.yml
+    @Value("${supabase.project-url}")
+    private String supabaseProjectUrl;
 
     private final AppProperties appProperties;
 
@@ -34,20 +40,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Stateless API — no sessions, no cookies
                 .sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Disable CSRF — not needed for stateless JWT APIs
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // CORS — only allow requests from the frontend domain
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
 
-                // Route-level access rules
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public endpoints — no JWT needed
                         .requestMatchers(HttpMethod.GET,
                                 "/reports/nearby",
                                 "/authority-scores",
@@ -55,21 +56,17 @@ public class SecurityConfig {
                                 "/actuator/health"
                         ).permitAll()
 
-                        // Coming Soon waitlist endpoints — open to anyone
                         .requestMatchers(HttpMethod.POST,
                                 "/store/notify",
                                 "/ussd/notify"
                         ).permitAll()
 
-                        // Everything else requires a valid Supabase JWT
                         .anyRequest().authenticated()
                 )
 
-                // JWT validation using Supabase public keys
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.decoder(jwtDecoder()))
                         .authenticationEntryPoint((request, response, ex) -> {
-                            // Return clean JSON error instead of default HTML 401
                             response.setContentType("application/json");
                             response.setStatus(401);
                             response.getWriter().write(
@@ -84,9 +81,14 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        // Fetches Supabase public keys once and caches them
-        // Validates: signature, expiry, issuer automatically
-        return NimbusJwtDecoder.withJwkSetUri(jwksUri).build();
+        NimbusJwtDecoder decoder = NimbusJwtDecoder
+                .withJwkSetUri(jwksUri)
+                .jwsAlgorithms(algorithms -> {
+                    algorithms.add(SignatureAlgorithm.RS256);
+                    algorithms.add(SignatureAlgorithm.ES256);
+                })
+                .build();
+        return decoder;
     }
 
     @Bean
