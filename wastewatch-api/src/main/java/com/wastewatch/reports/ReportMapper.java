@@ -36,6 +36,10 @@ public class ReportMapper {
 
     private String calculateTimeOpen(OffsetDateTime createdAt,
                                      OffsetDateTime resolvedAt) {
+
+        // createdAt can be null immediately after save before Hibernate flushes
+        if (createdAt == null) return "0m";
+
         OffsetDateTime end = resolvedAt != null ? resolvedAt : OffsetDateTime.now();
         Duration duration = Duration.between(createdAt, end);
 

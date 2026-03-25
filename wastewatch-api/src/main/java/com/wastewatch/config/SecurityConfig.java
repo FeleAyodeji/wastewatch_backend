@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,7 +29,7 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String jwksUri;
 
-    // ← ADDED: reads supabase.project-url from application.yml
+
     @Value("${supabase.project-url}")
     private String supabaseProjectUrl;
 
@@ -53,7 +55,10 @@ public class SecurityConfig {
                                 "/reports/nearby",
                                 "/authority-scores",
                                 "/leaderboard/**",
-                                "/actuator/health"
+                                "/actuator/health","/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST,
@@ -81,8 +86,16 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
+        // Customize RestTemplate with longer timeouts
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(10000);   // 10 seconds to establish connection
+        factory.setReadTimeout(60000);      // 60 seconds to read response (increase if needed)
+
+        RestTemplate restTemplate = new RestTemplate(factory);
+
         NimbusJwtDecoder decoder = NimbusJwtDecoder
                 .withJwkSetUri(jwksUri)
+                .restOperations(restTemplate)   // ← use our custom RestTemplate
                 .jwsAlgorithms(algorithms -> {
                     algorithms.add(SignatureAlgorithm.RS256);
                     algorithms.add(SignatureAlgorithm.ES256);

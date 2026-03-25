@@ -2,6 +2,10 @@ spring:
   application:
     name: wastewatch-api
 
+  config:
+    activate:
+      on-profile: production
+
   session:
     store-type: none
 
@@ -18,7 +22,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     open-in-view: false
     show-sql: false
     properties:
@@ -41,7 +45,7 @@ spring:
     baseline-on-migrate: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   servlet:
     context-path: /api/v1
 

@@ -2,6 +2,8 @@ package com.wastewatch.points;
 
 import com.wastewatch.common.BaseEntity;
 import com.wastewatch.points.enums.TransactionType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,9 +22,10 @@ public class PointsEntity extends BaseEntity {
     @Column(nullable = false)
     private Integer points;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(name = "transaction_type", nullable = false,
             columnDefinition = "transaction_type")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     private TransactionType transactionType;
 
     @Column(name = "reference_id")

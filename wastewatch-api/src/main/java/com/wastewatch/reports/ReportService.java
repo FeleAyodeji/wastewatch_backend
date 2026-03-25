@@ -4,6 +4,7 @@ import com.wastewatch.common.exceptions.*;
 import com.wastewatch.points.PointsService;
 import com.wastewatch.reports.dto.*;
 import com.wastewatch.reports.enums.*;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class ReportService {
     private final UpvoteRepository upvoteRepository;
     private final PointsService pointsService;
     private final ReportMapper mapper;
+    private final EntityManager entityManager;
 
     // ─────────────────────────────────────────────
     // SUBMIT REPORT
@@ -54,6 +56,9 @@ public class ReportService {
         pointsService.credit(citizenId, 50,
                 com.wastewatch.points.enums.TransactionType.SUBMISSION,
                 saved.getId());
+
+        entityManager.flush();
+        entityManager.refresh(saved);
 
         log.info("Report {} submitted by citizen {}", saved.getId(), citizenId);
         return mapper.toResponse(saved);

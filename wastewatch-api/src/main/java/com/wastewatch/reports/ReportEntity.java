@@ -2,6 +2,8 @@ package com.wastewatch.reports;
 
 import com.wastewatch.common.BaseEntity;
 import com.wastewatch.reports.enums.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -34,22 +36,24 @@ public class ReportEntity extends BaseEntity {
     @Column(name = "photo_url", columnDefinition = "TEXT")
     private String photoUrl;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(name = "waste_category", nullable = false,
             columnDefinition = "waste_category")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     private WasteCategory wasteCategory;
 
     @Column(name = "is_anonymous", nullable = false)
     private Boolean isAnonymous = false;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(nullable = false, columnDefinition = "report_status")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     private ReportStatus status = ReportStatus.SUBMITTED;
 
     // Always set by Java — never by the client
-    @Enumerated(EnumType.STRING)
     @Column(name = "health_risk", nullable = false,
             columnDefinition = "health_risk")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     private HealthRisk healthRisk;
 
     @Column(name = "health_warning", columnDefinition = "TEXT")

@@ -2,6 +2,8 @@ package com.wastewatch.redemptions;
 
 import com.wastewatch.common.BaseEntity;
 import com.wastewatch.redemptions.enums.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +31,8 @@ public class RedemptionEntity extends BaseEntity {
     @Column(name = "interswitch_ref", length = 100)
     private String interswitchRef;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(nullable = false, columnDefinition = "redemption_status")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     private RedemptionStatus status = RedemptionStatus.PENDING;
 }
